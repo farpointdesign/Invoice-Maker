@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e90ff">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Invoice App">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invoice Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -146,9 +144,6 @@
       }
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="form-block">
@@ -217,21 +212,13 @@ Task 2 - 4</textarea>
   </div>
 
 <script>
-new QRCode(document.getElementById("venmoQrCode"), {
-  text: "https://venmo.com/u/CrawdadthePinchy",
-  width: 80,
-  height: 80
-});
-
 function updateInvoiceOnly() {
   document.querySelector('.invoice-section').style.display = 'block';
   const name = document.getElementById('senderName').value;
-  const address = document.getElementById('senderAddress').value.replace(/
-/g, '<br>');
+  const address = document.getElementById('senderAddress').value.replace(/\n/g, '<br>');
   document.getElementById('senderInfo').innerHTML = `${name}<br>${address}`;
 
-  const billTo = document.getElementById('billToInput').value.replace(/
-/g, '<br>');
+  const billTo = document.getElementById('billToInput').value.replace(/\n/g, '<br>');
   document.getElementById('billTo').innerHTML = `<strong>Bill To:</strong><br>${billTo}`;
 
   const invoiceNo = document.getElementById('invoiceNo').value;
@@ -242,8 +229,7 @@ function updateInvoiceOnly() {
   const desc = document.getElementById('description').value;
   document.getElementById('descriptionOutput').innerHTML = `<strong>Description:</strong> ${desc}`;
 
-  const taskList = document.getElementById('taskList').value.trim().split('
-');
+  const taskList = document.getElementById('taskList').value.trim().split('\n');
   const table = document.getElementById('tasksTable');
   table.innerHTML = '<tr><th>Task</th><th>Hours</th></tr>';
   let totalHours = 0;
@@ -298,12 +284,6 @@ function saveAndPrintInvoice() {
     const fileName = `${invoiceNo}_${clientName}.pdf`;
     pdf.save(fileName);
   });
-}
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(reg => console.log('Service worker registered.', reg))
-    .catch(err => console.error('Service worker registration failed:', err));
 }
 </script>
 </body>
