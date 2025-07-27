@@ -239,28 +239,7 @@ function updateInvoiceOnly() {
   const desc = document.getElementById('description').value;
   document.getElementById('descriptionOutput').innerHTML = `<strong>Description:</strong> ${desc}`;
 
-  const taskList = document.getElementById('taskList').value.trim().split('\n');
-  const table = document.getElementById('tasksTable');
-  table.innerHTML = '<tr><th>Task</th><th>Hours</th></tr>';
-  let totalHours = 0;
-  taskList.forEach(row => {
-    const parts = row.split(' - ');
-    const task = parts[0] || '';
-    const hrs = parseFloat(parts[1]) || 0;
-    totalHours += hrs;
-    table.innerHTML += `<tr><td>${task}</td><td>${hrs}</td></tr>`;
-  });
-
-  const rate = parseFloat(document.getElementById('hourlyRate').value);
-  const matCost = parseFloat(document.getElementById('materialsCostInput').value);
-  const paid = parseFloat(document.getElementById('amountPaid').value);
-  const total = totalHours * rate + matCost;
-  const balance = total - paid;
-
-  document.getElementById('totalHours').value = totalHours;
-  document.getElementById('totals').innerHTML = `Total Hours: ${totalHours}<br>Hourly Rate: $${rate.toFixed(2)}<br>Materials: $${matCost.toFixed(2)}<br><strong>Total: $${total.toFixed(2)}</strong><br>Paid: $${paid.toFixed(2)}<br><strong>Balance Due: $${balance.toFixed(2)}</strong>`;
-
-  document.getElementById('footerName').innerText = name;
+  const taskList = documen
 }
 
 function saveAndPrintInvoice() {
