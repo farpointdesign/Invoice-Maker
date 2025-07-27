@@ -193,37 +193,16 @@ Task 2 - 4</textarea>
     </div>
   </div>
 
-  <div class="invoice-section" style="min-height: 1000px; display: flex; flex-direction: column; justify-content: space-between;">
-    <div class="header">
-      <div class="header-title">INVOICE</div>
-      <div class="header-address" id="senderInfo"></div>
-    </div>
-    <div class="section">
-  <table style="width:100%; font-size:14px;">
-    <tr>
-      <td style="width:50%; vertical-align:top;"><strong>Bill To:</strong><br><div id="billTo"></div></td>
-      <td style="width:50%; vertical-align:top;"><div id="invoiceDetails"></div></td>
-    </tr>
-  </table>
-</div>
-    <div class="section" id="invoiceDetails"></div>
-    <div class="section" id="descriptionOutput"></div>
-    <div class="section">
-      <table id="tasksTable"></table>
-    </div>
-    <div class="section">
-  <table style="width:100%; font-size:14px;">
-    <tbody id="totals"></tbody>
-  </table>
-</div>
-    <div class="footer-row" style="margin-top: auto;">
+  <div class="invoice-section" style="min-height: 1000px; display: flex; flex-direction: column;">
+    <div class="invoice-content" style="flex: 1; display: flex; flex-direction: column;">
+<div class="header">$1<div class="footer-row" style="margin-top: auto;">
   <p>Make checks payable to:<br><strong id="footerName"></strong></p>
   <div style="text-align:center;">
   <div id="venmoQrCode"></div>
   <div style="font-size:12px; margin-top:5px;">Venmo</div>
 </div>
 </div>
-    </div>
+</div>
   </div>
 
 <script>
