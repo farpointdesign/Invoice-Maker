@@ -226,7 +226,8 @@ new QRCode(document.getElementById("venmoQrCode"), {
 function updateInvoiceOnly() {
   document.querySelector('.invoice-section').style.display = 'block';
   const name = document.getElementById('senderName').value;
-  const address = document.getElementById('senderAddress').value.replace(/\n/g, '<br>')
+  const address = document.getElementById('senderAddress').value.replace(/
+/g, '<br>');
   document.getElementById('senderInfo').innerHTML = `${name}<br>${address}`;
 
   const billTo = document.getElementById('billToInput').value.replace(/
@@ -241,7 +242,8 @@ function updateInvoiceOnly() {
   const desc = document.getElementById('description').value;
   document.getElementById('descriptionOutput').innerHTML = `<strong>Description:</strong> ${desc}`;
 
-  const taskList = document.getElementById('taskList').value.trim().split('\n');
+  const taskList = document.getElementById('taskList').value.trim().split('
+');
   const table = document.getElementById('tasksTable');
   table.innerHTML = '<tr><th>Task</th><th>Hours</th></tr>';
   let totalHours = 0;
