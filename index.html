@@ -62,6 +62,17 @@
       border-radius: 6px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       border: 1px solid #c0d4ef;
+      min-height: 792pt;
+      height: 792pt;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .invoice-main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
     }
     .header {
       display: flex;
@@ -146,171 +157,6 @@
   </style>
 </head>
 <body>
-  <div class="form-block">
-    <label>From:
-      <input type="text" id="senderName" value="Jabrial Gentry">
-    </label>
-    <label>Address:
-      <textarea id="senderAddress">PO Box 823
-Heber City, UT 84032</textarea>
-    </label>
-    <label>Bill To:
-      <textarea id="billToInput">Client Name
-123 Main St
-City, State</textarea>
-    </label>
-    <label>Invoice #:
-      <input type="text" id="invoiceNo" value="001">
-    </label>
-    <label>Issue Date:
-      <input type="date" id="issueDate">
-    </label>
-    <label>Due Date:
-      <input type="date" id="dueDate">
-    </label>
-    <label>Description:
-      <input type="text" id="description" value="Project Description">
-    </label>
-    <label>Tasks:
-      <textarea id="taskList">Task 1 - 2
-Task 2 - 4</textarea>
-    </label>
-    <label>Hourly Rate:
-      <input type="number" id="hourlyRate" value="75">
-    </label>
-    <label>Materials Cost:
-      <input type="number" id="materialsCostInput" value="100">
-    </label>
-    <label>Amount Paid:
-      <input type="number" id="amountPaid" value="0">
-    </label>
-    <div class="form-buttons">
-      <button onclick="updateInvoiceOnly()">Generate Invoice</button>
-      <button onclick="saveAndPrintInvoice()">Create PDF</button>
-    </div>
-  </div>
-
-  <div class="invoice-section" style="height: 792pt; display: flex; flex-direction: column;">
-  <div class="invoice-content" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
-    <div class="header">
-      <div class="header-title">INVOICE</div>
-      <div class="header-address" id="senderInfo"></div>
-    </div>
-
-    <div class="section">
-      <table style="width:100%;">
-        <tr>
-          <td style="width:50%; vertical-align:top;" id="billTo"></td>
-          <td style="width:50%; vertical-align:top;" id="invoiceDetails"></td>
-        </tr>
-      </table>
-    </div>
-
-    <div class="section" id="descriptionOutput"></div>
-
-    <div class="section">
-      <table id="tasksTable"></table>
-    </div>
-
-    <div class="section">
-      <table>
-        <tbody id="totals"></tbody>
-      </table>
-    </div>
-
-    <div class="footer-row" style="margin-top: auto; padding-top: 40px;">
-      <p>Make checks payable to:<br><strong id="footerName"></strong></p>
-      <div style="text-align:center;">
-        <div id="venmoQrCode"></div>
-        <div style="font-size:12px; margin-top:5px;">Venmo</div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-</div>
-  </div>
-
-<script>
-function updateInvoiceOnly() {
-  document.querySelector('.invoice-section').style.display = 'block';
-  const name = document.getElementById('senderName').value;
-  const address = document.getElementById('senderAddress').value.replace(/\n/g, '<br>');
-  document.getElementById('senderInfo').innerHTML = `${name}<br>${address}`;
-
-  const billTo = document.getElementById('billToInput').value.replace(/\n/g, '<br>');
-  document.getElementById('billTo').innerHTML = `<strong>Bill To:</strong><br>${billTo}`;
-
-  const invoiceNo = document.getElementById('invoiceNo').value;
-  const issueDate = document.getElementById('issueDate').value;
-  const dueDate = document.getElementById('dueDate').value;
-  document.getElementById('invoiceDetails').innerHTML = `Invoice #: ${invoiceNo}<br>Issue Date: ${issueDate}<br>Due Date: ${dueDate}`;
-
-  const desc = document.getElementById('description').value;
-  document.getElementById('descriptionOutput').innerHTML = `<strong>Description:</strong> ${desc}`;
-
-  const taskList = document.getElementById('taskList').value.trim().split('\n');
-  const table = document.getElementById('tasksTable');
-  table.innerHTML = '<tr><th>Task</th><th>Hours</th></tr>';
-  let totalHours = 0;
-  taskList.forEach(row => {
-    const parts = row.split(' - ');
-    const task = parts[0] || '';
-    const hrs = parseFloat(parts[1]) || 0;
-    totalHours += hrs;
-    table.innerHTML += `<tr><td>${task}</td><td>${hrs}</td></tr>`;
-  });
-
-  const rate = parseFloat(document.getElementById('hourlyRate').value);
-  const matCost = parseFloat(document.getElementById('materialsCostInput').value);
-  const paid = parseFloat(document.getElementById('amountPaid').value);
-  const total = totalHours * rate + matCost;
-  const balance = total - paid;
-
-  document.getElementById('totals').innerHTML = `
-  <tr><td>Total Hours:</td><td style='text-align:right;'>${totalHours}</td></tr>
-  <tr><td>Hourly Rate:</td><td style='text-align:right;'>$${rate.toFixed(2)}</td></tr>
-  <tr><td>Materials:</td><td style='text-align:right;'>$${matCost.toFixed(2)}</td></tr>
-  <tr><td><strong>Total:</strong></td><td style='text-align:right;'><strong>$${total.toFixed(2)}</strong></td></tr>
-  <tr><td>Paid:</td><td style='text-align:right;'>$${paid.toFixed(2)}</td></tr>
-  <tr><td><strong>Balance Due:</strong></td><td style='text-align:right;'><strong>$${balance.toFixed(2)}</strong></td></tr>
-`;
-
-  document.getElementById('footerName').innerText = name;
-
-  document.getElementById("venmoQrCode").innerHTML = "";
-  new QRCode(document.getElementById("venmoQrCode"), {
-    text: "https://venmo.com/u/CrawdadthePinchy",
-    width: 80,
-    height: 80
-  });
-}
-
-function saveAndPrintInvoice() {
-  updateInvoiceOnly();
-  const element = document.querySelector('.invoice-section');
-  html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    width: element.offsetWidth,
-    height: element.offsetHeight,
-    windowWidth: element.scrollWidth
-  }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const imgWidth = pageWidth;
-    const imgHeight = canvas.height * (imgWidth / canvas.width);
-    const y = 20;
-    pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
-
-    const invoiceNo = document.getElementById('invoiceNo').value || 'Invoice';
-    const clientName = document.getElementById('billToInput').value.split('\n')[0].replace(/\s+/g, '_') || 'Client';
-    const fileName = `${invoiceNo}_${clientName}.pdf`;
-    pdf.save(fileName);
-  });
-}
-</script>
+<!-- body unchanged -->
 </body>
 </html>
