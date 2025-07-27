@@ -268,7 +268,7 @@ function saveAndPrintInvoice() {
   const element = document.querySelector('.invoice-section');
   html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const imgWidth = pageWidth;
     const imgHeight = canvas.height * (imgWidth / canvas.width);
