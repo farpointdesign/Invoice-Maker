@@ -175,9 +175,6 @@ City, State</textarea>
       <textarea id="taskList">Task 1 - 2
 Task 2 - 4</textarea>
     </label>
-    <label>Total Hours:
-      <input type="number" id="totalHours" value="6">
-    </label>
     <label>Hourly Rate:
       <input type="number" id="hourlyRate" value="75">
     </label>
@@ -193,7 +190,7 @@ Task 2 - 4</textarea>
     </div>
   </div>
 
-  <div class="invoice-section" style="min-height: 1000px; display: flex; flex-direction: column;">
+  <div class="invoice-section" style="height: 792pt; display: flex; flex-direction: column;">
   <div class="invoice-content" style="flex: 1; display: flex; flex-direction: column;">
     <div class="header">
       <div class="header-title">INVOICE</div>
@@ -270,7 +267,6 @@ function updateInvoiceOnly() {
   const total = totalHours * rate + matCost;
   const balance = total - paid;
 
-  document.getElementById('totalHours').value = totalHours;
   document.getElementById('totals').innerHTML = `
   <tr><td>Total Hours:</td><td style='text-align:right;'>${totalHours}</td></tr>
   <tr><td>Hourly Rate:</td><td style='text-align:right;'>$${rate.toFixed(2)}</td></tr>
