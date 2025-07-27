@@ -146,212 +146,147 @@
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<script>
-function loadInvoice(input) {
-  const file = input.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      document.getElementById('senderName').value = data.senderName || '';
-      document.getElementById('senderAddress').value = data.senderAddress || '';
-      document.getElementById('billToInput').value = data.billTo || '';
-      document.getElementById('invoiceNo').value = data.invoiceNo || '';
-      document.getElementById('issueDate').value = data.issueDate || '';
-      document.getElementById('dueDate').value = data.dueDate || '';
-      document.getElementById('description').value = data.description || '';
-      document.getElementById('taskList').value = (data.taskList || []).join('\n');
-      document.getElementById('totalHours').value = data.totalHours || '';
-      document.getElementById('hourlyRate').value = data.hourlyRate || '';
-      document.getElementById('materialsCostInput').value = data.materialsCost || '';
-      document.getElementById('amountPaid').value = data.amountPaid || '';
-      updateInvoiceOnly();
-    } catch (err) {
-      alert("Invalid JSON file");
-    }
-  };
-  reader.readAsText(file);
-}
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="form-block">
-    <label>Sender Name: <input id="senderName" value="Jabrial Gentry"></label>
-    <label>Sender Address: <textarea id="senderAddress">PO Box 823
-Heber City, UT 84032</textarea></label>
-    <label>Bill To: <textarea id="billToInput">Client Name
-123 Client St.
-City, ST 00000</textarea></label>
-    <label>Invoice #: <input id="invoiceNo" value="001"></label>
-    <label>Issue Date: <input id="issueDate" type="date"></label>
-    <label>Due Date: <input id="dueDate" type="date"></label>
-    <label>Description: <input id="description" value="Bathroom Remodel"></label>
-    <label style="grid-column: 1 / -1">Tasks (format: Task - Hours per line): <textarea id="taskList">Demo tile - 4
-Install tile - 6</textarea></label>
-    <label>Total Hours: <input id="totalHours" value="10"></label>
-    <label>Hourly Rate: <input id="hourlyRate" value="75"></label>
-    <label>Materials Cost: <input id="materialsCostInput" value="250"></label>
-    <label>Amount Paid: <input id="amountPaid" value="0"></label>
+    <label>From:
+      <input type="text" id="senderName" value="Jabrial Gentry">
+    </label>
+    <label>Address:
+      <textarea id="senderAddress">PO Box 823
+Heber City, UT 84032</textarea>
+    </label>
+    <label>Bill To:
+      <textarea id="billToInput">Client Name
+123 Main St
+City, State</textarea>
+    </label>
+    <label>Invoice #:
+      <input type="text" id="invoiceNo" value="001">
+    </label>
+    <label>Issue Date:
+      <input type="date" id="issueDate">
+    </label>
+    <label>Due Date:
+      <input type="date" id="dueDate">
+    </label>
+    <label>Description:
+      <input type="text" id="description" value="Project Description">
+    </label>
+    <label>Tasks:
+      <textarea id="taskList">Task 1 - 2
+Task 2 - 4</textarea>
+    </label>
+    <label>Total Hours:
+      <input type="number" id="totalHours" value="6">
+    </label>
+    <label>Hourly Rate:
+      <input type="number" id="hourlyRate" value="75">
+    </label>
+    <label>Materials Cost:
+      <input type="number" id="materialsCostInput" value="100">
+    </label>
+    <label>Amount Paid:
+      <input type="number" id="amountPaid" value="0">
+    </label>
     <div class="form-buttons">
-  <button onclick="updateInvoiceOnly()">Generate Invoice</button>
-  <button onclick="saveAndPrintInvoice()">Save and Print</button>
-  <label style="display: flex; align-items: center; cursor: pointer;">
-  <input type="file" accept=".json" style="display: none" onchange="loadInvoice(this)">
-  <span style="padding: 10px 15px; background-color: #1e90ff; color: white; border-radius: 5px;">Load Invoice File</span>
-</label>
-</div>
+      <button onclick="updateInvoiceOnly()">Generate Invoice</button>
+      <button onclick="saveAndPrintInvoice()">Create PDF</button>
+    </div>
   </div>
 
   <div class="invoice-section">
     <div class="header">
       <div class="header-title">INVOICE</div>
-      <div class="header-address">
-        <div id="senderNameText">Jabrial Gentry</div>
-        <div id="senderAddressText">PO Box 823<br>Heber City, UT 84032</div>
-      </div>
+      <div class="header-address" id="senderInfo"></div>
     </div>
-    <div class="section"><strong>Bill To:</strong><br><div id="billTo"></div></div>
-    <div class="section"><strong>Invoice #:</strong> <span id="invoiceNumber"></span></div>
-    <div class="section"><strong>Issue Date:</strong> <span id="issueDateText"></span> | <strong>Due Date:</strong> <span id="dueDateText"></span></div>
-    <div class="section"><strong>Description:</strong> <span id="descriptionText"></span></div>
+    <div class="section" id="billTo"></div>
+    <div class="section" id="invoiceDetails"></div>
+    <div class="section" id="descriptionOutput"></div>
     <div class="section">
-      <table>
-        <thead><tr><th>Task</th><th>Hours</th></tr></thead>
-        <tbody id="taskTable"></tbody>
-        <tfoot>
-          <tr><td colspan="2" style="border: none;"></td></tr>
-          <tr><td><strong>Total Hours</strong></td><td id="totalHoursText" style="text-align:right"></td></tr>
-          <tr><td><strong>Hourly Rate</strong></td><td id="hourlyRateText" style="text-align:right"></td></tr>
-          <tr><td colspan="2" style="border: none;"></td></tr>
-          <tr><td><strong>Labor Total</strong></td><td id="laborTotal" style="text-align:right"></td></tr>
-          <tr><td><strong>Materials</strong></td><td id="materialsCost" style="text-align:right"></td></tr>
-          <tr><td colspan="2" style="border: none;"></td></tr>
-          <tr><td><strong>Total</strong></td><td id="totalCost" style="text-align:right"></td></tr>
-          <tr><td><strong>Paid</strong></td><td id="paid" style="text-align:right"></td></tr>
-          <tr><td><strong>Amount Due</strong></td><td id="due" style="text-align:right"></td></tr>
-        </tfoot>
-      </table>
+      <table id="tasksTable"></table>
     </div>
+    <div class="section" id="totals"></div>
     <div class="footer-row">
-      <div>
-        <p>Make checks payable to:</p>
-        <p id="footerName">Jabrial Gentry</p>
-        <p id="footerAddress">PO Box 823<br>Heber City, UT 84032</p>
-      </div>
+      <p>Make checks payable to:<br><strong id="footerName"></strong></p>
       <div id="venmoQrCode"></div>
     </div>
   </div>
 
-  <script>
-    new QRCode(document.getElementById("venmoQrCode"), {
-      text: "https://venmo.com/u/CrawdadthePinchy",
-      width: 80,
-      height: 80
-    });
-
-    function updateInvoiceOnly() {
-      const name = document.getElementById('senderName').value;
-      const address = document.getElementById('senderAddress').value;
-      const billTo = document.getElementById('billToInput').value.replace(/\n/g, '<br>');
-      const invoiceNo = document.getElementById('invoiceNo').value;
-      const issueDate = new Date(document.getElementById('issueDate').value).toLocaleDateString();
-      const dueDate = new Date(document.getElementById('dueDate').value).toLocaleDateString();
-      const description = document.getElementById('description').value;
-      const taskList = document.getElementById('taskList').value.trim().split('\n');
-      const totalHours = parseFloat(document.getElementById('totalHours').value);
-      const hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
-      const materialsCost = parseFloat(document.getElementById('materialsCostInput').value);
-      const amountPaid = parseFloat(document.getElementById('amountPaid').value);
-
-      const laborTotal = (totalHours * hourlyRate).toFixed(2);
-      const totalCost = (parseFloat(laborTotal) + materialsCost).toFixed(2);
-      const totalDue = (totalCost - amountPaid).toFixed(2);
-
-      document.getElementById('senderNameText').innerText = name;
-      document.getElementById('senderAddressText').innerHTML = address.replace(/\n/g, '<br>');
-      document.getElementById('billTo').innerHTML = billTo;
-      document.getElementById('invoiceNumber').innerText = invoiceNo;
-      document.getElementById('issueDateText').innerText = issueDate;
-      document.getElementById('dueDateText').innerText = dueDate;
-      document.getElementById('descriptionText').innerText = description;
-
-      const tbody = document.getElementById('taskTable');
-      tbody.innerHTML = '';
-      taskList.forEach(task => {
-        const [desc, hours] = task.split(' - ');
-        tbody.innerHTML += `<tr><td>${desc}</td><td style="text-align:right">${hours}</td></tr>`;
-      });
-
-      document.getElementById('totalHoursText').innerText = totalHours;
-      document.getElementById('hourlyRateText').innerText = `$${hourlyRate.toFixed(2)}`;
-      document.getElementById('laborTotal').innerText = `$${laborTotal}`;
-      document.getElementById('materialsCost').innerText = `$${materialsCost.toFixed(2)}`;
-      document.getElementById('totalCost').innerText = `$${totalCost}`;
-      document.getElementById('paid').innerText = `- $${amountPaid.toFixed(2)}`;
-      document.getElementById('due').innerText = `$${totalDue}`;
-      document.getElementById('footerName').innerText = name;
-      document.getElementById('footerAddress').innerHTML = address.replace(/\n/g, '<br>');
-
-      document.querySelector('.invoice-section').style.display = 'block';
-    }
-	
-	function saveAndPrintInvoice() {
-  updateInvoiceOnly(); // updates the invoice preview with form data
-
-  const invoiceData = {
-    senderName: document.getElementById('senderName').value,
-    senderAddress: document.getElementById('senderAddress').value,
-    billTo: document.getElementById('billToInput').value,
-    invoiceNo: document.getElementById('invoiceNo').value,
-    issueDate: document.getElementById('issueDate').value,
-    dueDate: document.getElementById('dueDate').value,
-    description: document.getElementById('description').value,
-    taskList: document.getElementById('taskList').value.trim().split('\n'),
-    totalHours: document.getElementById('totalHours').value,
-    hourlyRate: document.getElementById('hourlyRate').value,
-    materialsCost: document.getElementById('materialsCostInput').value,
-    amountPaid: document.getElementById('amountPaid').value
-  };
-
-  const fileName = `${invoiceData.invoiceNo}_${invoiceData.billTo.split('\n')[0].replace(/\s+/g, '_')}_${invoiceData.issueDate || 'invoice'}.json`;
-  const blob = new Blob([JSON.stringify(invoiceData, null, 2)], { type: 'application/json' });
-  const blobUrl = URL.createObjectURL(blob);
-
-  const fakeLink = document.createElement('a');
-  fakeLink.href = blobUrl;
-  fakeLink.setAttribute('download', fileName);
-  fakeLink.style.display = 'none';
-  document.body.appendChild(fakeLink);
-  fakeLink.click();
-
-  setTimeout(() => {
-    URL.revokeObjectURL(blobUrl);
-    document.body.removeChild(fakeLink);
-    const element = document.querySelector('.invoice-section');
-    html2canvas(element).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jspdf.jsPDF();
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(fileName.replace('.json', '.pdf'));
-    });
-  }, 100);
-}
-  </script>
-  
 <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('Service worker registered.', reg))
-      .catch(err => console.error('Service worker registration failed:', err));
-  }
+new QRCode(document.getElementById("venmoQrCode"), {
+  text: "https://venmo.com/u/CrawdadthePinchy",
+  width: 80,
+  height: 80
+});
+
+function updateInvoiceOnly() {
+  document.querySelector('.invoice-section').style.display = 'block';
+  const name = document.getElementById('senderName').value;
+  const address = document.getElementById('senderAddress').value.replace(/\n/g, '<br>');
+  document.getElementById('senderInfo').innerHTML = `${name}<br>${address}`;
+
+  const billTo = document.getElementById('billToInput').value.replace(/\n/g, '<br>');
+  document.getElementById('billTo').innerHTML = `<strong>Bill To:</strong><br>${billTo}`;
+
+  const invoiceNo = document.getElementById('invoiceNo').value;
+  const issueDate = document.getElementById('issueDate').value;
+  const dueDate = document.getElementById('dueDate').value;
+  document.getElementById('invoiceDetails').innerHTML = `Invoice #: ${invoiceNo}<br>Issue Date: ${issueDate}<br>Due Date: ${dueDate}`;
+
+  const desc = document.getElementById('description').value;
+  document.getElementById('descriptionOutput').innerHTML = `<strong>Description:</strong> ${desc}`;
+
+  const taskList = document.getElementById('taskList').value.trim().split('\n');
+  const table = document.getElementById('tasksTable');
+  table.innerHTML = '<tr><th>Task</th><th>Hours</th></tr>';
+  let totalHours = 0;
+  taskList.forEach(row => {
+    const parts = row.split(' - ');
+    const task = parts[0] || '';
+    const hrs = parseFloat(parts[1]) || 0;
+    totalHours += hrs;
+    table.innerHTML += `<tr><td>${task}</td><td>${hrs}</td></tr>`;
+  });
+
+  const rate = parseFloat(document.getElementById('hourlyRate').value);
+  const matCost = parseFloat(document.getElementById('materialsCostInput').value);
+  const paid = parseFloat(document.getElementById('amountPaid').value);
+  const total = totalHours * rate + matCost;
+  const balance = total - paid;
+
+  document.getElementById('totalHours').value = totalHours;
+  document.getElementById('totals').innerHTML = `Total Hours: ${totalHours}<br>Hourly Rate: $${rate.toFixed(2)}<br>Materials: $${matCost.toFixed(2)}<br><strong>Total: $${total.toFixed(2)}</strong><br>Paid: $${paid.toFixed(2)}<br><strong>Balance Due: $${balance.toFixed(2)}</strong>`;
+
+  document.getElementById('footerName').innerText = name;
+}
+
+function saveAndPrintInvoice() {
+  updateInvoiceOnly();
+  const element = document.querySelector('.invoice-section');
+  html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const imgWidth = pageWidth;
+    const imgHeight = canvas.height * (imgWidth / canvas.width);
+    const y = imgHeight > pdf.internal.pageSize.getHeight() ? 0 : (pdf.internal.pageSize.getHeight() - imgHeight) / 2;
+    pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
+
+    const invoiceNo = document.getElementById('invoiceNo').value || 'Invoice';
+    const clientName = document.getElementById('billToInput').value.split('\n')[0].replace(/\s+/g, '_') || 'Client';
+    const fileName = `${invoiceNo}_${clientName}.pdf`;
+    pdf.save(fileName);
+  });
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(reg => console.log('Service worker registered.', reg))
+    .catch(err => console.error('Service worker registration failed:', err));
+}
 </script>
 </body>
 </html>
