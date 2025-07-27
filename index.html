@@ -54,7 +54,6 @@
     }
     .invoice-section {
       width: 612pt;
-      display: none;
       max-width: 800px;
       margin: auto;
       background-color: #fff;
@@ -157,6 +156,74 @@
   </style>
 </head>
 <body>
-<!-- body unchanged -->
+  <div class="form-block">
+    <label>Bill To:
+      <textarea id="billTo">Client Name
+123 Street
+City, ST ZIP</textarea>
+    </label>
+    <label>Invoice #:
+      <input type="text" id="invoiceNo" value="001">
+    </label>
+    <label>Issue Date:
+      <input type="date" id="issueDate">
+    </label>
+    <label>Due Date:
+      <input type="date" id="dueDate">
+    </label>
+    <label>Project Description:
+      <input type="text" id="description" value="Bathroom Remodel">
+    </label>
+    <label>Tasks (format: Task - Hours):
+      <textarea id="taskList">Demo tile - 4
+Install tile - 6</textarea>
+    </label>
+    <label>Hourly Rate:
+      <input type="number" id="hourlyRate" value="75">
+    </label>
+    <label>Materials Cost:
+      <input type="number" id="materialsCost" value="250">
+    </label>
+    <label>Amount Paid:
+      <input type="number" id="amountPaid" value="0">
+    </label>
+    <div class="form-buttons">
+      <button onclick="updateInvoiceOnly()">Generate</button>
+      <button onclick="savePDF()">Create PDF</button>
+    </div>
+  </div>
+
+  <div class="invoice-section" id="invoiceSection">
+    <div class="invoice-main">
+      <div class="header">
+        <div class="header-title">INVOICE</div>
+        <div class="header-address" id="senderAddress">Jabrial Gentry<br>PO Box 823<br>Heber City, UT 84032</div>
+      </div>
+      <div class="section" id="billToSection"></div>
+      <div class="section" id="invoiceMeta"></div>
+      <div class="section" id="projectDescription"></div>
+      <div class="section">
+        <table id="tasksTable">
+          <thead><tr><th>Task</th><th>Hours</th><th>Cost</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="section">
+        <table>
+          <tbody id="totals"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="footer-row">
+      <p>Make checks payable to:<br><strong id="footerName">Jabrial Gentry</strong></p>
+      <div style="text-align:center;">
+        <div id="venmoQrCode"></div>
+        <div style="font-size:12px; margin-top:5px;">Venmo</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Your full working JS logic (from Alpha Final) goes here
+  </script>
 </body>
 </html>
