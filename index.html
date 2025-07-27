@@ -88,7 +88,89 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-<!-- unchanged HTML form -->
+<div class="container">
+  <h1>Invoice Generator</h1>
+  <div>
+    <label>Your Name</label>
+    <input id="senderName" type="text" value="Jabrial Gentry">
+    <label>Your Address</label>
+    <textarea id="senderAddress">PO Box 823
+Heber City, UT 84032</textarea>
+
+    <label>Bill To</label>
+    <textarea id="billToInput"></textarea>
+    <label>Invoice #</label>
+    <input id="invoiceNo" type="text">
+    <label>Issue Date</label>
+    <input id="issueDate" type="date">
+    <label>Due Date</label>
+    <input id="dueDate" type="date">
+    <label>Description</label>
+    <input id="description" type="text">
+    <label>Tasks (label - hours)</label>
+    <textarea id="taskList"></textarea>
+    <label>Total Hours</label>
+    <input id="totalHours" type="number">
+    <label>Hourly Rate</label>
+    <input id="hourlyRate" type="number" value="75">
+    <label>Materials Cost</label>
+    <input id="materialsCostInput" type="number">
+    <label>Amount Paid</label>
+    <input id="amountPaid" type="number" value="0">
+
+    <div>
+      <button onclick="updateInvoiceOnly()">Generate</button>
+      <button onclick="saveAndPrintInvoice()">Save and Print</button>
+      <input type="file" id="loadFile" style="display:none" onchange="loadInvoice(event)">
+      <button onclick="document.getElementById('loadFile').click()">Load Invoice File</button>
+    </div>
+  </div>
+
+  <div class="invoice-section">
+    <div class="header">
+      <div>
+        <h2>INVOICE</h2>
+      </div>
+      <div style="text-align:right">
+        <div id="invoiceSenderName"></div>
+        <div id="invoiceSenderAddress"></div>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">Bill To</div>
+      <div id="invoiceBillTo"></div>
+    </div>
+    <div>
+      <div class="section-title">Invoice Info</div>
+      <div>Invoice #: <span id="invoiceNumber"></span></div>
+      <div>Issue Date: <span id="invoiceIssueDate"></span></div>
+      <div>Due Date: <span id="invoiceDueDate"></span></div>
+    </div>
+    <div>
+      <div class="section-title">Description</div>
+      <div id="invoiceDescription"></div>
+    </div>
+    <div>
+      <div class="section-title">Tasks</div>
+      <div id="invoiceTasks" class="tasks"></div>
+    </div>
+    <div>
+      <div>Total Hours: <span id="invoiceTotalHours"></span></div>
+      <div>Hourly Rate: $<span id="invoiceHourlyRate"></span></div>
+      <div>Labor Total: $<span id="invoiceLaborTotal"></span></div>
+      <div>Materials: $<span id="invoiceMaterials"></span></div>
+      <div>Amount Paid: $<span id="invoicePaid"></span></div>
+      <div><strong>Balance Due: $<span id="invoiceBalance"></span></strong></div>
+    </div>
+    <div class="footer">
+      <div>
+        Make checks payable to:<br>
+        <strong>Jabrial Gentry</strong>
+      </div>
+      <div id="qrcode"></div>
+    </div>
+  </div>
+</div>
 
 <script>
   async function saveAndPrintInvoice() {
