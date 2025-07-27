@@ -223,7 +223,70 @@ Install tile - 6</textarea>
     </div>
   </div>
   <script>
-    // Your full working JS logic (from Alpha Final) goes here
-  </script>
+  function updateInvoiceOnly() {
+    document.getElementById('billToSection').innerHTML = "<strong>Bill To:</strong><br>" + document.getElementById('billTo').value.replace(/\n/g, "<br>");
+    document.getElementById('invoiceMeta').innerHTML = "<strong>Invoice #: </strong>" + document.getElementById('invoiceNo').value +
+      "<br><strong>Issue Date: </strong>" + document.getElementById('issueDate').value +
+      "<br><strong>Due Date: </strong>" + document.getElementById('dueDate').value;
+    document.getElementById('projectDescription').innerHTML = "<strong>Description:</strong> " + document.getElementById('description').value;
+
+    const taskList = document.getElementById('taskList').value.trim().split('\n');
+    const hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
+    const materialsCost = parseFloat(document.getElementById('materialsCost').value);
+    const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+    let tasksHtml = '';
+    let totalHours = 0;
+
+    taskList.forEach(task => {
+      const parts = task.split(' - ');
+      const name = parts[0];
+      const hours = parseFloat(parts[1]) || 0;
+      const cost = hours * hourlyRate;
+      totalHours += hours;
+      tasksHtml += `<tr><td>${name}</td><td>${hours}</td><td>$${cost.toFixed(2)}</td></tr>`;
+    });
+
+    document.querySelector('#tasksTable tbody').innerHTML = tasksHtml;
+
+    const laborCost = totalHours * hourlyRate;
+    const totalDue = laborCost + materialsCost;
+    const balance = totalDue - amountPaid;
+
+    document.getElementById('totals').innerHTML = `
+      <tr><td><strong>Total Hours</strong></td><td colspan="2">${totalHours}</td></tr>
+      <tr><td><strong>Hourly Rate</strong></td><td colspan="2">$${hourlyRate.toFixed(2)}</td></tr>
+      <tr><td><strong>Labor</strong></td><td colspan="2">$${laborCost.toFixed(2)}</td></tr>
+      <tr><td><strong>Materials</strong></td><td colspan="2">$${materialsCost.toFixed(2)}</td></tr>
+      <tr><td><strong>Total</strong></td><td colspan="2">$${totalDue.toFixed(2)}</td></tr>
+      <tr><td><strong>Amount Paid</strong></td><td colspan="2">$${amountPaid.toFixed(2)}</td></tr>
+      <tr><td><strong>Balance Due</strong></td><td colspan="2">$${balance.toFixed(2)}</td></tr>
+    `;
+
+    document.getElementById('footerName').innerText = "Jabrial Gentry";
+
+    // Regenerate QR code
+    const qrContainer = document.getElementById('venmoQrCode');
+    qrContainer.innerHTML = '';
+    new QRCode(qrContainer, {
+      text: "https://venmo.com/u/CrawdadthePinchy",
+      width: 80,
+      height: 80
+    });
+  }
+
+  function savePDF() {
+    updateInvoiceOnly();
+    const invoice = document.getElementById('invoiceSection');
+    html2canvas(invoice, { scale: 2 }).then(canvas => {
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'pt', 'letter');
+      pdf.addImage(imgData, 'JPEG', 0, 0, 612, 792);
+      pdf.save(`Invoice_${document.getElementById('invoiceNo').value || '000'}.pdf`);
+    });
+  }
+
+  window.onload = updateInvoiceOnly;
+</script>
 </body>
 </html>
