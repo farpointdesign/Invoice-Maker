@@ -55,6 +55,7 @@
       margin-top: 10px;
     }
     .invoice-section {
+      width: 612pt;
       display: none;
       max-width: 800px;
       margin: auto;
@@ -225,10 +226,12 @@ new QRCode(document.getElementById("venmoQrCode"), {
 function updateInvoiceOnly() {
   document.querySelector('.invoice-section').style.display = 'block';
   const name = document.getElementById('senderName').value;
-  const address = document.getElementById('senderAddress').value.replace(/\n/g, '<br>');
+  const address = document.getElementById('senderAddress').value.replace(/
+/g, '<br>');
   document.getElementById('senderInfo').innerHTML = `${name}<br>${address}`;
 
-  const billTo = document.getElementById('billToInput').value.replace(/\n/g, '<br>');
+  const billTo = document.getElementById('billToInput').value.replace(/
+/g, '<br>');
   document.getElementById('billTo').innerHTML = `<strong>Bill To:</strong><br>${billTo}`;
 
   const invoiceNo = document.getElementById('invoiceNo').value;
@@ -239,19 +242,55 @@ function updateInvoiceOnly() {
   const desc = document.getElementById('description').value;
   document.getElementById('descriptionOutput').innerHTML = `<strong>Description:</strong> ${desc}`;
 
-  const taskList = documen
+  const taskList = document.getElementById('taskList').value.trim().split('
+');
+  const table = document.getElementById('tasksTable');
+  table.innerHTML = '<tr><th>Task</th><th>Hours</th></tr>';
+  let totalHours = 0;
+  taskList.forEach(row => {
+    const parts = row.split(' - ');
+    const task = parts[0] || '';
+    const hrs = parseFloat(parts[1]) || 0;
+    totalHours += hrs;
+    table.innerHTML += `<tr><td>${task}</td><td>${hrs}</td></tr>`;
+  });
+
+  const rate = parseFloat(document.getElementById('hourlyRate').value);
+  const matCost = parseFloat(document.getElementById('materialsCostInput').value);
+  const paid = parseFloat(document.getElementById('amountPaid').value);
+  const total = totalHours * rate + matCost;
+  const balance = total - paid;
+
+  document.getElementById('totalHours').value = totalHours;
+  document.getElementById('totals').innerHTML = `Total Hours: ${totalHours}<br>Hourly Rate: $${rate.toFixed(2)}<br>Materials: $${matCost.toFixed(2)}<br><strong>Total: $${total.toFixed(2)}</strong><br>Paid: $${paid.toFixed(2)}<br><strong>Balance Due: $${balance.toFixed(2)}</strong>`;
+
+  document.getElementById('footerName').innerText = name;
+
+  document.getElementById("venmoQrCode").innerHTML = "";
+  new QRCode(document.getElementById("venmoQrCode"), {
+    text: "https://venmo.com/u/CrawdadthePinchy",
+    width: 80,
+    height: 80
+  });
 }
 
 function saveAndPrintInvoice() {
   updateInvoiceOnly();
   const element = document.querySelector('.invoice-section');
-  html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+  html2canvas(element, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff",
+    width: element.offsetWidth,
+    height: element.offsetHeight,
+    windowWidth: element.scrollWidth
+  }).then(canvas => {
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const imgWidth = pageWidth;
     const imgHeight = canvas.height * (imgWidth / canvas.width);
-    const y = imgHeight > pdf.internal.pageSize.getHeight() ? 0 : (pdf.internal.pageSize.getHeight() - imgHeight) / 2;
+    const y = 20;
     pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
 
     const invoiceNo = document.getElementById('invoiceNo').value || 'Invoice';
