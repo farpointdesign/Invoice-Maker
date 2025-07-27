@@ -193,21 +193,36 @@ Task 2 - 4</textarea>
     </div>
   </div>
 
-  <div class="invoice-section">
+  <div class="invoice-section" style="min-height: 1000px; display: flex; flex-direction: column; justify-content: space-between;">
     <div class="header">
       <div class="header-title">INVOICE</div>
       <div class="header-address" id="senderInfo"></div>
     </div>
-    <div class="section" id="billTo"></div>
+    <div class="section">
+  <table style="width:100%; font-size:14px;">
+    <tr>
+      <td style="width:50%; vertical-align:top;"><strong>Bill To:</strong><br><div id="billTo"></div></td>
+      <td style="width:50%; vertical-align:top;"><div id="invoiceDetails"></div></td>
+    </tr>
+  </table>
+</div>
     <div class="section" id="invoiceDetails"></div>
     <div class="section" id="descriptionOutput"></div>
     <div class="section">
       <table id="tasksTable"></table>
     </div>
-    <div class="section" id="totals"></div>
-    <div class="footer-row">
-      <p>Make checks payable to:<br><strong id="footerName"></strong></p>
-      <div id="venmoQrCode"></div>
+    <div class="section">
+  <table style="width:100%; font-size:14px;">
+    <tbody id="totals"></tbody>
+  </table>
+</div>
+    <div class="footer-row" style="margin-top: auto;">
+  <p>Make checks payable to:<br><strong id="footerName"></strong></p>
+  <div style="text-align:center;">
+  <div id="venmoQrCode"></div>
+  <div style="font-size:12px; margin-top:5px;">Venmo</div>
+</div>
+</div>
     </div>
   </div>
 
@@ -248,7 +263,14 @@ function updateInvoiceOnly() {
   const balance = total - paid;
 
   document.getElementById('totalHours').value = totalHours;
-  document.getElementById('totals').innerHTML = `Total Hours: ${totalHours}<br>Hourly Rate: $${rate.toFixed(2)}<br>Materials: $${matCost.toFixed(2)}<br><strong>Total: $${total.toFixed(2)}</strong><br>Paid: $${paid.toFixed(2)}<br><strong>Balance Due: $${balance.toFixed(2)}</strong>`;
+  document.getElementById('totals').innerHTML = `
+  <tr><td>Total Hours:</td><td style='text-align:right;'>${totalHours}</td></tr>
+  <tr><td>Hourly Rate:</td><td style='text-align:right;'>$${rate.toFixed(2)}</td></tr>
+  <tr><td>Materials:</td><td style='text-align:right;'>$${matCost.toFixed(2)}</td></tr>
+  <tr><td><strong>Total:</strong></td><td style='text-align:right;'><strong>$${total.toFixed(2)}</strong></td></tr>
+  <tr><td>Paid:</td><td style='text-align:right;'>$${paid.toFixed(2)}</td></tr>
+  <tr><td><strong>Balance Due:</strong></td><td style='text-align:right;'><strong>$${balance.toFixed(2)}</strong></td></tr>
+`;
 
   document.getElementById('footerName').innerText = name;
 
